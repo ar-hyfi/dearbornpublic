@@ -1,5 +1,16 @@
-.map-container {
-  width: 100vw;
-  height: 100vh;
+html, body, #root, .App {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
+.App > main {
+  height: calc(100% - [Your_Header_Height]px);  /* Assuming your header has a fixed height. Replace [Your_Header_Height] with the actual value */
+  overflow: hidden;  /* Optional, to ensure nothing spills out */
+}
+
+.App {
+  width: 100vw;
+  height: 100vh;
+  background-color: inherit;
+}

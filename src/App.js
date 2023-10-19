@@ -4,6 +4,8 @@ import './App.css';
 import Map from './components/Map';
 import SideBar from './components/SideBar';
 import Header from './components/Header';
+import DisclaimerDialog from './components/DisclaimerDialog';
+
 //import river_bridges from './geojsons/river_bridges.geojson';
 //import road_sensors from './geojsons/road_sensors.geojson';
 import { Grid } from '@mui/material';
@@ -23,6 +25,11 @@ const globalTheme = createTheme({
 
 function App() {
   const [geoData, setGeoData] = useState(null);
+  const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false);
+
+  const handleClose = () => {
+    setAcceptedDisclaimer(true);
+  };
 
   useEffect(() => {
       Promise.all([
@@ -40,6 +47,10 @@ function App() {
   }, []);
 
   return (
+    <div>
+    <DisclaimerDialog open={!acceptedDisclaimer} handleClose={handleClose} />
+    {/* Your app content, which will be displayed after the user accepts the disclaimer */}
+    {acceptedDisclaimer && (
     <ThemeProvider theme={globalTheme}>
     <CssBaseline />
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -58,6 +69,8 @@ function App() {
     </div>
     
     </ThemeProvider>
+    )}
+    </div>
   );
 }
 

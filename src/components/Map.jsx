@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
 import mapboxgl from 'mapbox-gl';
-import river_bridges from '../geojsons/river_bridges.geojson';
-import road_sensors from '../geojsons/road_sensors.geojson';
+ 
 import { fetchData } from '../services/influxDB'
 import { Button, Typography } from '@mui/material';
 import axios from 'axios';
 import './Map.css'
 import { fetchDataFromInfluxDB } from '../services/influxDB';
-import riverBridges from '../geojsons/river_bridges.geojson';
-import roadSensors from '../geojsons/road_sensors.geojson';
 
 // Make sure to set your Mapbox token here
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -233,8 +230,8 @@ function Map() {
   useEffect(() => {
     async function fetchGeoJsonData() {
       try {
-        const response1 = await axios.get(river_bridges);
-        const response2 = await axios.get(road_sensors);
+        const response1 = await axios.get('/river_bridges.geojson');
+        const response2 = await axios.get('/road_sensors.geojson');
 
         if (response1.data.type === "FeatureCollection" && response2.data.type === "FeatureCollection") {
           setGeojsonData({

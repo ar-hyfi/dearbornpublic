@@ -8,7 +8,7 @@ export function convertUTCToHoursMinutesFromNow(utcString) {
     const minutes = Math.floor((timeDifferenceInMilliseconds % (1000 * 60 * 60)) / (1000 * 60));
 
     // Create a reader-friendly string
-    let resultString = "Last updated: ";
+    let resultString = "As of ";
 
     if (hours > 0) {
         resultString += `${hours} ${hours === 1 ? 'hour' : 'hours'}`;

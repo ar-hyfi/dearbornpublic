@@ -5,11 +5,27 @@ import river_bridges from '../geojsons/river_bridges.geojson';
 import road_sensors from '../geojsons/road_sensors.geojson';
 import { fetchData } from '../services/influxDB'
 import { Button, Typography } from '@mui/material';
-
-
+import axios from 'axios';
+import './Map.css'
+import { fetchDataFromInfluxDB } from '../services/influxDB';
 // Make sure to set your Mapbox token here
+// eslint-disable-next-line import/no-webpack-loader-syntax
+mapboxgl.workerClass = require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default;
 mapboxgl.accessToken = 'pk.eyJ1IjoiYXJpZWwtaHlmaSIsImEiOiJjbGo3ZHI2cWwwcTlzM3FxZ3RtNDFkcXpkIn0.StEAI2H39Ne4tJ3Pb1DfFA';
 
+function getBounds(features) {
+  let lats = [];
+  let lngs = [];
+  features.forEach(feature => {
+    lngs.push(feature.geometry.coordinates[0]);
+    lats.push(feature.geometry.coordinates[1]);
+  });
+
+  return [
+    [Math.min(...lngs), Math.min(...lats)],
+    [Math.max(...lngs), Math.max(...lats)]
+  ];
+}
 // class Map extends React.Component {
 //   // using a class property
 //   map = null;
@@ -200,11 +216,41 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiYXJpZWwtaHlmaSIsImEiOiJjbGo3ZHI2cWwwcTlzM3FxZ
 // }
 // export default Map;
 function Map() {
+
   const [map, setMap] = useState(null);
-  const [darkMode, setDarkMode] = useState(true); // Use a boolean state for dark mode
+  const [darkMode, setDarkMode] = useState(true); // in case we want to be able to switch between dark and light mode later
+  const [geojsonData, setGeojsonData] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+
+
+  const river_bridges = '/static/media/river_bridges.073ce61ee13e34f202dd.geojson'
+  const road_sensors = '/static/media/road_sensors.1f5c7a1e3f754e92f2dd.geojson'
+
+  useEffect(() => {
+    async function fetchGeoJsonData() {
+      try {
+        const response1 = await axios.get(river_bridges);
+        const response2 = await axios.get(road_sensors);
+
+        if (response1.data.type === "FeatureCollection" && response2.data.type === "FeatureCollection") {
+          setGeojsonData({
+            type: "FeatureCollection",
+            features: [...response1.data.features, ...response2.data.features]
+          });
+        } else {
+          console.error("One of the GeoJSON files does not have the expected format.");
+        }
+      } catch (error) {
+        console.error("Error fetching GeoJSON data:", error);
+      }
+    }
+    fetchGeoJsonData();
+  }, []);
 
   useEffect(() => {
     const mapStyle = darkMode ? 'mapbox://styles/mapbox/dark-v10' : 'mapbox://styles/mapbox/light-v10';
+
     const mapInstance = new mapboxgl.Map({
       container: 'map',
       style: mapStyle,
@@ -215,40 +261,156 @@ function Map() {
     });
 
     setMap(mapInstance);
+
     mapInstance.on('load', () => {
       mapInstance.resize();
-    });
-    return () => mapInstance.remove(); // Cleanup on unmount
-  }, [darkMode]);
+      
+    // Check if GeoJSON data is available
+    if (mapInstance && geojsonData && geojsonData.features.length > 0) {
 
-  const toggleMapMode = () => {
-    const mapContainer = document.getElementById("map");
-    // Fade out the map container
-    mapContainer.style.transition = "opacity 0.5s";
-    mapContainer.style.opacity = "0";
+      mapInstance.addSource('points', {
+        'type': 'geojson',
+        'data': geojsonData, // Your GeoJSON data
+      });
+      
+      mapInstance.addLayer({
+        'id': 'points',
+        'type': 'circle',
+        'source': 'points',
+        'paint': {
+          'circle-radius': 8,
+          'circle-color': 'white'
+        },
+        'filter': ['==', '$type', 'Point'],
+      });
+      
+      mapInstance.addLayer({
+        'id': 'point-labels',
+        'type': 'symbol',
+        'source': 'points',
+        'layout': {
+          'text-field': ['get', 'display_name'], // Assumes 'display_name' is a property in your GeoJSON
+          'text-size': 16,
+          'text-offset': [0, 1.5], // Offset text to appear below the marker
+          'text-allow-overlap': false // Important! This ensures labels don't overlap
+        },
+        'paint': {
+          "text-color": "#ffffff"
+        }
+      });
+
+    // const bounds = getBounds(geojsonData.features);
+    // if (mapInstance) {
+    //   mapInstance.fitBounds(bounds, { padding: 30 });
+    //}
+    }
+
+
+    });
+
     
-    // After the fade-out effect is complete, switch the map style
-    setTimeout(() => {
-      setDarkMode(prevMode => !prevMode);
-      // Fade the map container back in after changing the map style
-      mapContainer.style.opacity = "1";
-    }, 500); // 500ms matches the transition duration
-  };
+
+
+    return () => mapInstance.remove(); // Cleanup on unmount
+  }, [darkMode, geojsonData]);
+
+  // Fetch data from InfluxDB and update the map
+  useEffect(() => {
+    if (!map) return;  // Don't run the rest of the code if map isn't available
+    if (!geojsonData || !Array.isArray(geojsonData.features) || geojsonData.features.length === 0) return;
+
+    setLoading(true);  // Start the spinner
+  
+    //const siteCodes = geojsonData.features.map(f => f.properties.siteCode);
+    
+    fetchDataFromInfluxDB(geojsonData)
+      .then(data => {
+        // Process and use the data to update the map
+        //console.log(data);
+        if (map) {  // Ensure that the map instance is available
+
+          Object.entries(data).forEach(([site_name, site_data]) => {
+
+            const site_code = site_data.site_code;
+            console.log(data)
+            const latestValue = site_data.data[0].value;  // Assuming data is an array and the latest value is the first item
+            const latestTimestamp = site_data.latestTimestamp;  // Assuming data is an array and the latest value is the first item
+            //console.log(typeof(latestValue))
+            //console.log(latestValue)
+            if (!site_code) {
+              console.warn(`Site code is undefined for site: ${site_name}. Skipping update for this site.`);
+              return;  // Skip this iteration and proceed to the next site
+          }
+            // Determine the color based on the latest value
+            const color = latestValue > 4 ? 'red' : 'green';
+
+            // Update the color of the site on the map
+            //console.log('is map', map)
+            map.setFilter('points', ['==', ['get', 'site_code'], site_code]);  // Filter for this specific site
+            map.setPaintProperty('points', 'circle-color', color);
+            // map.setFilter('point-labels', ['==', ['get', 'site_code'], site_code]);  // Filter for this specific site
+            // map.setPaintProperty('point-labels', 'text-color', color);
+          });
+          
+          // Remove filter to show all points again
+          map.setFilter('points', null);
+        }
+
+
+
+        setLoading(false);  // Stop the spinner once the data is fetched
+      })
+      .catch(error => {
+        console.error("Error fetching data from InfluxDB:", error);
+        setLoading(false);  // Stop the spinner if there's an error
+      });
+      
+  }, [geojsonData, map]);
+  // implementation of toggle to switch between dark and light mode
+  // const toggleMapMode = () => {
+  //   const mapContainer = document.getElementById("map");
+  //   // Fade out the map container
+  //   mapContainer.style.transition = "opacity 0.5s";
+  //   mapContainer.style.opacity = "0";
+    
+  //   // After the fade-out effect is complete, switch the map style
+  //   setTimeout(() => {
+  //     setDarkMode(prevMode => !prevMode);
+  //     // Fade the map container back in after changing the map style
+  //     mapContainer.style.opacity = "1";
+  //   }, 500); // 500ms matches the transition duration
+  // };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <div id="map" style={{ flex: 1, width: '100%' }} />
-        <div style={{ padding: '1em' }}>
-            {/* <Typography gutterBottom>Map Style</Typography>
+        <div id="map" style={{ flex: 1, width: '100%' }}>
+        {loading && (
+            <div style={{
+              position: 'absolute',
+              top: '10%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 1000,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}>
+              <div className="spinner"></div>
+              <p>Data Loading...</p>
+            </div>
+          )}
+        </div>
+    </div>
+        /* <div style={{ padding: '1em' }}>
+            <Typography gutterBottom>Map Style</Typography>
             <Button 
                 variant="contained"
                 color={darkMode ? "primary" : "secondary"}
                 onClick={toggleMapMode}
             >
                 Toggle Map Style
-            </Button> */}
-        </div>
-    </div>
+            </Button>
+        </div> */
 );
 
 }

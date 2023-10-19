@@ -7,6 +7,9 @@ import { Button, Typography } from '@mui/material';
 import axios from 'axios';
 import './Map.css'
 import { fetchDataFromInfluxDB } from '../services/influxDB';
+import Alert from '@mui/material/Alert';
+import Container from '@mui/material/Container';
+
 
 // Make sure to set your Mapbox token here
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -68,8 +71,10 @@ function Map() {
   const [map, setMap] = useState(null);
   const [darkMode, setDarkMode] = useState(true); // in case we want to be able to switch between dark and light mode later
   const [geojsonData, setGeojsonData] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); //  for getting data from influx
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [floodingDetected, setFloodingDetected] = useState(null); // null, 'detected', 'none'
+
 
 
   useEffect(() => {
@@ -123,7 +128,9 @@ function Map() {
         'source': 'points',
         'paint': {
           'circle-radius': 8,
-          'circle-color': 'white'
+          'circle-color': 'white',
+          'circle-stroke-color': 'black',
+          'circle-stroke-width': 1,
         },
         'filter': ['==', '$type', 'Point'],
       });
@@ -140,6 +147,23 @@ function Map() {
         },
         'paint': {
           "text-color": "#ffffff"
+        }
+      });
+
+      mapInstance.addLayer({
+        'id': 'point-labels-names',
+        'type': 'symbol',
+        'source': 'points',
+        'layout': {
+          'text-field': ['get', 'display_name'], // Assumes 'display_name' is a property in your GeoJSON
+          'text-size': 16,
+          'text-offset': [0, -2], // Offset text to appear below the marker
+          'text-allow-overlap': false // Important! This ensures labels don't overlap
+        },
+        'paint': {
+          "text-color": "#ffffff",
+          "text-halo-color": "black",
+          "text-halo-width": 1,
         }
       });
 
@@ -176,22 +200,52 @@ function Map() {
         //console.log(data);
         if (map) {  // Ensure that the map instance is available
           let matchExpression = ['match', ['get', 'site_code']];
+          let timestampExpression = ['match', ['get', 'site_code']];
 
+          let isAnyFloodingDetected = false;
           Object.entries(data).forEach(([site_name, site_data]) => {
+              //console.log(site_data)
               const site_code = site_data.site_code;
               const latestValue = site_data.data[0].value;
-              const color = Number(latestValue) > 4 ? 'red' : 'green';
+              const latestTimestamp = site_data.latestTimestamp;
+              const color = Number(latestValue) > 4 ? 'rgb(242, 73, 92)' : 'rgb(115, 191, 105)';
+              if (color === 'rgb(242, 73, 92)') {
+                isAnyFloodingDetected = true;
+            }
 
               // Add the site code and its color to the match expression
               matchExpression.push(site_code, color);
+              timestampExpression.push(site_code, latestTimestamp);
+
           });
+          if (isAnyFloodingDetected) {
+            setFloodingDetected('detected');
+          } else {
+                setFloodingDetected('none');
+            }
 
           // Add the default color at the end of the expression
           matchExpression.push('white');
+          timestampExpression.push('');
 
-          if (map && map.getLayer('points')) {
-              map.setPaintProperty('points', 'circle-color', matchExpression);
-          }
+          if (map) {
+            if (map.getLayer('points')) {
+                map.setPaintProperty('points', 'circle-color', matchExpression);
+            }
+        
+            if (map.getLayer('point-labels')) {
+              map.setPaintProperty('point-labels', 'text-halo-color', 'black');  // Setting the halo color to white
+              map.setPaintProperty('point-labels', 'text-halo-width', 1);  
+              map.setPaintProperty('point-labels', 'text-color', matchExpression);
+              map.setLayoutProperty('point-labels', 'text-field', timestampExpression);
+            }
+
+            if (map.getLayer('point-labels-names')) {
+              map.setPaintProperty('point-labels-names', 'text-halo-color', 'black');  // Setting the halo color to white
+              map.setPaintProperty('point-labels-names', 'text-halo-width', 1);  
+              map.setPaintProperty('point-labels-names', 'text-color', matchExpression);
+            }
+        }
         }
 
         setLoading(false);  // Stop the spinner once the data is fetched
@@ -221,7 +275,17 @@ function Map() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+
         <div id="map" style={{ flex: 1, width: '100%' }}>
+        {/* <Container maxWidth="sm" style={{ position: 'absolute', top: '5%', left: '50%', transform: 'translateX(-50%)', zIndex: 1000 }}>
+            {floodingDetected === 'detected' && (
+                <Alert severity="error">Flooding detected!</Alert>
+            )}
+
+            {floodingDetected === 'none' && (
+                <Alert severity="success">No flooding detected</Alert>
+            )}
+        </Container> */}
         {loading && (
             <div style={{
               position: 'absolute',

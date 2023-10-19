@@ -4,7 +4,7 @@ import Papa from 'papaparse';
 import { convertUTCToHoursMinutesFromNow } from '../utils/datetimeFunctions';
 
 function createLatestQuery(geojson) {
-    console.log(geojson)
+    //console.log(geojson)
     // extract all site codes from the geojson
     const siteCodes = geojson.features.map((f) => f.properties.site_code);
 
@@ -22,8 +22,48 @@ function createLatestQuery(geojson) {
     return query;
 }
 
+function createFloodTestQuery(geojson) {
+    //console.log(geojson)
+    // extract all site codes from the geojson
+    const siteCodes = geojson.features.map((f) => f.properties.site_code);
+
+    // convert the site codes to a string that can be used in the Flux query
+    const siteCodesQueryString = siteCodes.map(siteCode => `r.site_code == "${siteCode}"`).join(" or ");
+
+    var query = `from(bucket: "prod")
+    |> range(start: 2023-08-24T18:00:00Z, stop: 2023-08-25T12:00:00Z )
+    |> filter(fn: (r) => r._measurement == "maxbotix_depth")
+    |> filter(fn: (r) => ${siteCodesQueryString})
+    |> keep(columns: ["_value","site_code","site_name","_time"])
+    |> sort(columns: ["_time"])
+    |> last()`;
+    
+    return query;
+}
+
+function createNoDataTestQuery(geojson) {
+    //console.log(geojson)
+    // extract all site codes from the geojson
+    const siteCodes = geojson.features.map((f) => f.properties.site_code);
+
+    // convert the site codes to a string that can be used in the Flux query
+    const siteCodesQueryString = siteCodes.map(siteCode => `r.site_code == "${siteCode}"`).join(" or ");
+
+    var query = `from(bucket: "prod")
+    |> range(start: 2023-08-28T22:00:00Z, stop: 2023-08-29T20:00:00Z )
+    |> filter(fn: (r) => r._measurement == "maxbotix_depth")
+    |> filter(fn: (r) => ${siteCodesQueryString})
+    |> keep(columns: ["_value","site_code","site_name","_time"])
+    |> sort(columns: ["_time"])
+    |> last()`;
+    
+    return query;
+}
+
 export async function fetchDataFromInfluxDB(markerData) {
     const query = createLatestQuery(markerData);
+    //const query = createFloodTestQuery(markerData);
+    //const query = createNoDataTestQuery(markerData);
     //console.log(query)
     const region = 'us-west-2-1';
     const organization = 'hyfi';
@@ -78,7 +118,7 @@ export async function fetchDataFromInfluxDB(markerData) {
                         level = 0.01;
                     }
 
-                    var alert_status = marker.properties.level > marker.properties.alert_level_in;
+                    var alert_status = level > marker.properties.alert_level_in;
 
 
                     // If site_name is defined, add the data to organizedData
@@ -98,7 +138,7 @@ export async function fetchDataFromInfluxDB(markerData) {
               },
             });
           });
-      
+          console.log('organizedData', organizedData)
           return organizedData;
       
         } catch (error) {

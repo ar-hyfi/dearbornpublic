@@ -11,14 +11,14 @@ export function convertUTCToHoursMinutesFromNow(utcString) {
     let resultString = "";
 
     if (hours > 0) {
-        resultString += `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
+        resultString += `${hours} ${hours === 1 ? 'hr' : 'hrs'}`;
     }
 
     if (minutes > 0) {
         if (hours > 0) {
         resultString += " and ";
         }
-        resultString += `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
+        resultString += `${minutes} ${minutes === 1 ? 'min' : 'min'}`;
     }
 
     if (hours === 0 && minutes === 0) {

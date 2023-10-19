@@ -18,7 +18,7 @@ function Spinner() {
             borderRadius: '5px',
             border: '1px solid #E6E6E6',
         }}>
-            <CircularProgress color="primary" />
+            <CircularProgress color="secondary" />
             <Typography variant="body1" style={{ marginTop: '16px' }}>
                 Data Loading...
             </Typography>

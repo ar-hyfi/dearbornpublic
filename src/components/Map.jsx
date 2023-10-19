@@ -153,12 +153,14 @@ function Map() {
           'text-field': ['get', 'display_name'], // Assumes 'display_name' is a property in your GeoJSON
           'text-size': 16,
           'text-offset': [0, -2], // Offset text to appear below the marker
-          'text-allow-overlap': false // Important! This ensures labels don't overlap
+          'text-allow-overlap': false, // Important! This ensures labels don't overlap
+          'text-font': ['Open Sans Bold']
         },
         'paint': {
           "text-color": "#ffffff",
           "text-halo-color": "black",
           "text-halo-width": 1,
+          
         }
       });
 
@@ -189,7 +191,7 @@ function Map() {
     fetchDataFromInfluxDB(geojsonData)
     
       .then(data => {
-        console.log(data)
+        //console.log(data)
         //console.log(geojsonData.features.map(f => f.properties.site_code));
 
         // Process and use the data to update the map

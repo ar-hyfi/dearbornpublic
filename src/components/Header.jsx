@@ -3,7 +3,7 @@ import { Typography, AppBar, Toolbar, Box, Link } from '@mui/material';
 import { styled } from '@mui/system';
 import hyfiLogo from './hyfi_logo.png';
 import dearbornLogo from './Dearborn_Logo.png';
-import miNextCitiesLogo from './Smart-City-5.webp';
+import miNextCitiesLogo from './MiNextCities_Logo.png';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   backgroundColor: '#2E2E2E', 

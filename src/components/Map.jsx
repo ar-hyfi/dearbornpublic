@@ -26,195 +26,43 @@ function getBounds(features) {
     [Math.max(...lngs), Math.max(...lats)]
   ];
 }
-// class Map extends React.Component {
-//   // using a class property
-//   map = null;
 
-//   componentDidMount() {
-//      this.map = new mapboxgl.Map({
-//       container: 'map', 
-//       style: 'mapbox://styles/ariel-hyfi/clkcua2s3003l01qka0339nog', 
-//       center: [-83.20130880622676, 42.31766379470411], 
-//       zoom: 12, 
-//       pitch: 45,
-//       bearing: -17.6,
-//     });
+const river_bridges = {
+  "type": "FeatureCollection",
+  "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+  "features": [
+  { "type": "Feature", "properties": { "site_code":"86JR8P27+QM8J", "h_bed":180, "h_sensor":185.58, "alert_level (in)": 120, "display_name": "Gulley @ Rouge",  "full_name": "18.1 Gulley over River Rouge", "level":8}, "geometry": { "type": "Point", "coordinates": [ -83.28581008, 42.30191714 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8P2H+H93F", "h_bed":178.75, "h_sensor":182.67,"alert_level (in)": 120,"display_name": "Telegraph @ Rouge", "full_name": "18.2 Telegraph over River Rouge", "level":8}, "geometry": { "type": "Point", "coordinates": [ -83.27158186, 42.30138972 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8P3P+HH59", "h_bed":177.5, "h_sensor":186.44,"alert_level (in)": 120,"display_name": "Outer Drive @ Rouge",  "full_name": "18.3 Outer Drive over River Rouge", "level":8}, "geometry": { "type": "Point", "coordinates": [ -83.26350358, 42.30388155 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8P5W+CV95", "h_bed":176.75, "h_sensor":183.03,"alert_level (in)": 120,"display_name": "Military @ Rouge", "full_name": "18.4 Military over River Rouge", "level":8}, "geometry": { "type": "Point", "coordinates": [ -83.25275459, 42.30852982 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8R22+98X8", "h_bed":174.25, "h_sensor":180.66,"alert_level (in)": 120,"display_name": "Rotunda @ Rouge",  "full_name": "18.5 Rotunda over River Rouge", "level":8}, "geometry": { "type": "Point", "coordinates": [ -83.19913495, 42.30098118 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR7RVC+Q7VC", "h_bed":174, "h_sensor":180.05,"alert_level (in)": 120,"display_name": "Greenfield @ Rouge", "full_name": "18.6 Greenfield over River Rouge", "level":8}, "geometry": { "type": "Point", "coordinates": [ -83.17933631, 42.29448528 ] } }
+  ]
+};
 
-//     this.map.on('load', () => {
+const road_sensors = {
+  "type": "FeatureCollection",
+  "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+  "features": [
+  { "type": "Feature", "properties": { "site_code":"86JR8R75+5472", "h_bed":176.106, "h_sensor":179.232, "name": "1 Greenfield just south of Prospect","display_name":"Greenfield & Prospect", "level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.19221349, 42.31290205 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8R9R+7V89", "h_bed":173.736, "h_sensor":180.69, "name": "3 Wyoming & Southern", "display_name":"Wyoming & Southern","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.15778164, 42.31815584 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR7PXP+WJ38", "h_bed":182.317, "h_sensor":185.453, "name": "4 Outer Drive south of Michigan Ave ", "display_name":"Outer Drive & Michigan","level":0, "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.26344977, 42.29975715 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR7PXH+R778", "h_bed":181.17, "h_sensor":188.341, "name": "5 Telegraph & Michigan ", "display_name":"Telegraph & Michigan","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.27182153, 42.29953459 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8Q45+23QF", "h_bed":181.402, "h_sensor":184.528, "name": "9 Oakwood north of Park","display_name":"Oakwood & Park", "level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.24226994, 42.30508972 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8Q5M+VX34", "h_bed":179.445, "h_sensor":182.6, "name": "11 M39 southbound ramp service drive & Michigan ","display_name":"M39 Southbound Ramp & Michigan", "level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.21507639, 42.30962931 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8RFM+WHRQ", "h_bed":178.1556, "h_sensor":184.3, "name": "12 Michigan & Miller", "display_name":"Michigan & Miller","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.16609711, 42.32486819 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR7QXR+4P95", "h_bed":178.246, "h_sensor":180.773, "name": " 14 Rotunda just west of Southfield ", "display_name":"Rotunda & Southfield","level":0,"level_num":"",  "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.20812831, 42.29777586 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8QH8+G4P2", "h_bed":182.83, "h_sensor":186.358, "name": "15 Ford & Evergreen","display_name":"Ford & Evergreen", "level":0,"level_num":"",  "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.234667, 42.32881 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8R6W+627J", "h_bed":175.176, "h_sensor":180.017, "name": "17 Eagle Pass", "display_name":"Eagle Pass","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.15496174, 42.31054103 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8RF7+RJX2", "h_bed":180.01, "h_sensor":183.08, "name": "21 Chase & Colson", "display_name":"Chase & Colson","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.18589932, 42.32460332 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8R4F+8WQ2", "h_bed":174.21, "h_sensor":180.115, "name": "24.1 V-124, Grand Trunk\/Schaefer", "display_name":"Grand Trunk & Schaefer","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.17514948, 42.30582613 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8RMF+QFG8", "h_bed":177.414, "h_sensor":180.586, "name": "24.3 V-126, Schaefer south of Hemlock", "display_name":"Schaefer and Hemlock","level":0,"level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.17629024, 42.33443414 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8RHJ+V24G", "h_bed":176.95, "h_sensor":180.621, "name": "25.1 Oakman & Ford West", "display_name":"Oakman & Ford West","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.1699056, 42.3296398 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8RHJ+HC6P", "h_bed":176.917, "h_sensor":180.04, "name": "25.2 Oakman & Ford South", "display_name":"Oakman & Ford South","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.16898354, 42.32891688 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8RHM+R975", "h_bed":177.66, "h_sensor":180.73, "name": "25.3 Ford & Miller", "display_name":"Ford & Miller","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.16656388, 42.32952713 ] } }
+  ]  
+}   
 
-//       // add the data for the river bridges
-//       if (!this.map.getSource('river_bridges')) {
-//         this.map.addSource('river_bridges', {
-//             type: 'geojson',
-//             data: river_bridges,
-//         });
-//       }
-      
-//       // add the marker layer for the river bridges
-//       this.map.addLayer({
-//         'id': 'river_bridges_markers',
-//         'type': 'circle',
-//         'source': 'river_bridges',
-//         'paint' : {
-//             'circle-opacity': 1,
-//             'circle-stroke-width': 5,
-//             'circle-stroke-color': [
-//                     'case',
-//                         ['<', ['get', 'level'], ['get', 'alert_level (in)']], '#0E4732',
-//                         ['>=', ['get', 'level'], ['get', 'alert_level (in)']], '#8B0000',
-//                         // otherwise, set the text color to black
-//                         'black'
-//             ],
-//             'circle-radius':5,
-//             'circle-color': [
-//                     'case',
-//                         ['<', ['get', 'level'], ['get', 'alert_level (in)']], 'rgb(115, 191, 105)',
-//                         ['>=', ['get', 'level'], ['get', 'alert_level (in)']], 'rgb(242, 73, 92)',
-//                         // otherwise, set the text color to black
-//                         'black'
-//             ],
-//         },
-//       });    
-      
-//       // add the label layer for the river bridges
-//       this.map.addLayer({
-//           'id': 'river_bridges_labels',
-//           'type':'symbol',
-//           'source': 'river_bridges',
-//           'layout': {
-//               'text-field':['get','display_name'],
-//               'text-allow-overlap': false,
-//               'text-variable-anchor': ['top','bottom'],
-//               'text-radial-offset': 1,
-//               'text-justify': 'auto',
-//               'text-font': ['Arial Unicode MS Bold'],
-//               //'text-opacity': 0,
-//               },
-//           'paint': {
-//               // change the color of the text label based on the level
-//               'text-color': [
-//                   'case',
-//                       ['<', ['get', 'level'], ['get', 'alert_level (in)']], 'rgb(115, 191, 105)',
-//                       ['>=', ['get', 'level'], ['get', 'alert_level (in)']], 'rgb(242, 73, 92)',
-//                       // otherwise, set the text color to black
-//                       'black'
-//               ],
-//           }
-//       });
-
-//       // add the data for the road sensors
-//       if (!this.map.getSource('road_sensors')) {
-//         this.map.addSource('road_sensors', {
-//             type: 'geojson',
-//             data: road_sensors,
-//         });
-//       }
-
-//       // add the marker layer for the road sensors
-//       this.map.addLayer({
-//       'id': 'road_sensors_markers',
-//       'type': 'circle',
-//       'source': 'road_sensors',
-//       'paint' : {
-//           'circle-opacity': 1,
-//           'circle-stroke-width': 5,
-//           'circle-stroke-color': [
-//               'case',
-//               ['<', ['get', 'level'], 4], '#0E4732',
-//               ['>=', ['get', 'level'], 4], '#8B0000',
-//               // otherwise, set the circle outline to black
-//               'black',
-//           ],
-//           'circle-radius':5,
-//           'circle-color': [
-//               'case',
-//               // less than 4 inches, set the marker color to green
-//               ['<', ['get', 'level'], 4], 'rgb(115, 191, 105)',
-//               // in between 4 and 8 inches, set the marker color to yellow
-//              // ['all', ['>=', ['feature-state', 'level'], 4], ['<=', ['get', 'level'], 8]], 'yellow',
-//               // greater than 8 inches, set the marker color to red
-//               ['>', ['get', 'level'], 4], 'rgb(242, 73, 92)',
-//               // otherwise, set the marker color to white
-//               'black',
-//           ],
-//       },
-//       });    
-
-//       // add the label layer for the road sensors
-//       this.map.addLayer({
-//           'id': 'road_sensors_labels',
-//           'type': 'symbol',
-//           'source': 'road_sensors',
-//           'layout' : {
-//               'text-field':['get','display_name'],
-//               'text-allow-overlap': false,
-//               'text-variable-anchor': ['top','bottom'],
-//               'text-radial-offset': 1,
-//               'text-justify': 'auto',
-//               'text-size':16,
-//               //'text-opacity': 0,
-//               'text-font': ['Arial Unicode MS Bold'],
-
-//           },
-//           'paint' : {
-//               // change the color of the text label based on the level
-//               'text-color': [
-//                   'case',
-//                       ['<', ['get', 'level'], 4], 'rgb(115, 191, 105)',
-//                       ['>', ['get', 'level'], 4], 'rgb(242, 73, 92)',
-//                       //['all', ['>=', ['get', 'level_num'], 4], ['<=', ['get', 'level_num'], 8]], 'yellow',
-//                       'rgb(242, 73, 92)'
-//               ],
-
-//               // change the halo color of the text label based on the level
-//               'text-halo-color': [
-//                   'case',
-//                   // less than 4 inches, set the marker color to green
-//                   ['<', ['feature-state', 'level'], 4], '#023020',
-//                   // in between 4 and 8 inches, set the marker color to yellow
-//                   //['all', ['>=', ['feature-state', 'level'], 4], ['<=', ['get', 'level'], 8]], 'yellow',
-//                   // greater than 8 inches, set the marker color to red
-//                   ['>=', ['feature-state', 'level'], 4], '#FF0000',
-//                   // otherwise, set the marker color to white
-//                   'white',
-//               ],
-//               'text-halo-width': 1,
-//           }
-//       });
-
-//       // add the 3d buildings layer
-//       var layers = this.map.getStyle().layers;
-//       var labelLayerId;
-//       for (var i = 0; i < layers.length; i++) {
-//           if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
-//               labelLayerId = layers[i].id;
-//               break;
-//           }
-//       }
-
-//       this.map.addLayer({
-//           'id': '3d-buildings',
-//           'source': 'composite',
-//           'source-layer': 'building',
-//           'filter': ['==', 'extrude', 'true'],
-//           'type': 'fill-extrusion',
-//           'minzoom': 15,
-//           'paint': {
-//               'fill-extrusion-color': '#aaa',
-//               'fill-extrusion-height': ['get', 'height'],
-//               'fill-extrusion-base': ['get', 'min_height'],
-//               'fill-extrusion-opacity': .6
-//           }
-//       }, labelLayerId);
-    
-//     });
-//   }
-
-//   render() {
-//     return <div id="map" style={{ width: '100%', height: '100%' }} />;
-//   }
-// }
-// export default Map;
 function Map() {
 
   const [map, setMap] = useState(null);
@@ -228,27 +76,23 @@ function Map() {
   // const road_sensors = '/static/media/road_sensors.1f5c7a1e3f754e92f2dd.geojson'
 
   useEffect(() => {
-    async function fetchGeoJsonData() {
-      try {
-        const response1 = await axios.get('/river_bridges.geojson');
-        console.log('response1',response1)
-        const response2 = await axios.get('/road_sensors.geojson');
-        console.log('response2',response2)
-
-        if (response1.data.type === "FeatureCollection" && response2.data.type === "FeatureCollection") {
-          setGeojsonData({
-            type: "FeatureCollection",
-            features: [...response1.data.features, ...response2.data.features]
-          });
+    try {
+        if (river_bridges.type === "FeatureCollection" && road_sensors.type === "FeatureCollection") {
+            setGeojsonData({
+                type: "FeatureCollection",
+                features: [...river_bridges.features, ...road_sensors.features]
+            });
+            console.log(geojsonData)
         } else {
-          console.error("One of the GeoJSON files does not have the expected format.");
+            console.error("One of the GeoJSON files does not have the expected format.");
         }
-      } catch (error) {
-        console.error("Error fetching GeoJSON data:", error);
-      }
+    } catch (error) {
+        console.error("Error processing GeoJSON data:", error);
     }
-    fetchGeoJsonData();
-  }, []);
+}, []);
+
+
+
 
   useEffect(() => {
     const mapStyle = darkMode ? 'mapbox://styles/mapbox/dark-v10' : 'mapbox://styles/mapbox/light-v10';

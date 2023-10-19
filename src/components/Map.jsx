@@ -231,7 +231,9 @@ function Map() {
     async function fetchGeoJsonData() {
       try {
         const response1 = await axios.get('/river_bridges.geojson');
+        console.log('response1',response1)
         const response2 = await axios.get('/road_sensors.geojson');
+        console.log('response2',response2)
 
         if (response1.data.type === "FeatureCollection" && response2.data.type === "FeatureCollection") {
           setGeojsonData({

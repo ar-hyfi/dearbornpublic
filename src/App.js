@@ -31,20 +31,20 @@ function App() {
     setAcceptedDisclaimer(true);
   };
 
-  useEffect(() => {
-      Promise.all([
-          fetch('/static/media/river_bridges.073ce61ee13e34f202dd.geojson').then(response => response.json()),
-          fetch('/static/media/road_sensors.1f5c7a1e3f754e92f2dd.geojson').then(response => response.json())
-      ]).then(([data1, data2]) => {
-          const combinedFeatures = [...data1.features, ...data2.features];
-          // Assuming that the two GeoJSONs have the same structure except for the features
-          const mergedData = { ...data1, features: combinedFeatures };
-          setGeoData(mergedData);
-      }).catch(error => {
-          console.error("There was an error fetching and merging the geoJSON data:", error);
-      });
+  // useEffect(() => {
+  //     Promise.all([
+  //         fetch('/static/media/river_bridges.073ce61ee13e34f202dd.geojson').then(response => response.json()),
+  //         fetch('/static/media/road_sensors.1f5c7a1e3f754e92f2dd.geojson').then(response => response.json())
+  //     ]).then(([data1, data2]) => {
+  //         const combinedFeatures = [...data1.features, ...data2.features];
+  //         // Assuming that the two GeoJSONs have the same structure except for the features
+  //         const mergedData = { ...data1, features: combinedFeatures };
+  //         setGeoData(mergedData);
+  //     }).catch(error => {
+  //         console.error("There was an error fetching and merging the geoJSON data:", error);
+  //     });
 
-  }, []);
+  // }, []);
 
   return (
     <div>

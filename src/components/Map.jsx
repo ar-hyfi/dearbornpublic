@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 import mapboxgl from 'mapbox-gl';
- 
-import { fetchData } from '../services/influxDB'
-import { Button, Typography } from '@mui/material';
-import axios from 'axios';
 import './Map.css'
 import { fetchDataFromInfluxDB } from '../services/influxDB';
-import Alert from '@mui/material/Alert';
-import Container from '@mui/material/Container';
 import Legend from './Legend';
 
 // Make sure to set your Mapbox token here
@@ -16,30 +10,30 @@ import Legend from './Legend';
 mapboxgl.workerClass = require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default;
 mapboxgl.accessToken = 'pk.eyJ1IjoiYXJpZWwtaHlmaSIsImEiOiJjbGo3ZHI2cWwwcTlzM3FxZ3RtNDFkcXpkIn0.StEAI2H39Ne4tJ3Pb1DfFA';
 
-function getBounds(features) {
-  let lats = [];
-  let lngs = [];
-  features.forEach(feature => {
-    lngs.push(feature.geometry.coordinates[0]);
-    lats.push(feature.geometry.coordinates[1]);
-  });
+// function getBounds(features) {
+//   let lats = [];
+//   let lngs = [];
+//   features.forEach(feature => {
+//     lngs.push(feature.geometry.coordinates[0]);
+//     lats.push(feature.geometry.coordinates[1]);
+//   });
 
-  return [
-    [Math.min(...lngs), Math.min(...lats)],
-    [Math.max(...lngs), Math.max(...lats)]
-  ];
-}
+//   return [
+//     [Math.min(...lngs), Math.min(...lats)],
+//     [Math.max(...lngs), Math.max(...lats)]
+//   ];
+// }
 
 const river_bridges = {
   "type": "FeatureCollection",
   "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
   "features": [
-  { "type": "Feature", "properties": { "site_code":"86JR8P27+QM8J", "h_bed":180, "h_sensor":185.58, "alert_level (in)": 120, "display_name": "Gulley @ Rouge",  "full_name": "18.1 Gulley over River Rouge", "level":8}, "geometry": { "type": "Point", "coordinates": [ -83.28581008, 42.30191714 ] } },
-  { "type": "Feature", "properties": { "site_code":"86JR8P2H+H93F", "h_bed":178.75, "h_sensor":182.67,"alert_level (in)": 120,"display_name": "Telegraph @ Rouge", "full_name": "18.2 Telegraph over River Rouge", "level":8}, "geometry": { "type": "Point", "coordinates": [ -83.27158186, 42.30138972 ] } },
-  { "type": "Feature", "properties": { "site_code":"86JR8P3P+HH59", "h_bed":177.5, "h_sensor":186.44,"alert_level (in)": 120,"display_name": "Outer Drive @ Rouge",  "full_name": "18.3 Outer Drive over River Rouge", "level":8}, "geometry": { "type": "Point", "coordinates": [ -83.26350358, 42.30388155 ] } },
-  { "type": "Feature", "properties": { "site_code":"86JR8P5W+CV95", "h_bed":176.75, "h_sensor":183.03,"alert_level (in)": 120,"display_name": "Military @ Rouge", "full_name": "18.4 Military over River Rouge", "level":8}, "geometry": { "type": "Point", "coordinates": [ -83.25275459, 42.30852982 ] } },
-  { "type": "Feature", "properties": { "site_code":"86JR8R22+98X8", "h_bed":174.25, "h_sensor":180.66,"alert_level (in)": 120,"display_name": "Rotunda @ Rouge",  "full_name": "18.5 Rotunda over River Rouge", "level":8}, "geometry": { "type": "Point", "coordinates": [ -83.19913495, 42.30098118 ] } },
-  { "type": "Feature", "properties": { "site_code":"86JR7RVC+Q7VC", "h_bed":174, "h_sensor":180.05,"alert_level (in)": 120,"display_name": "Greenfield @ Rouge", "full_name": "18.6 Greenfield over River Rouge", "level":8}, "geometry": { "type": "Point", "coordinates": [ -83.17933631, 42.29448528 ] } }
+  { "type": "Feature", "properties": { "site_code":"86JR8P27+QM8J", "h_bed":180, "h_sensor":185.58, "alert_level_in": 120, "display_name": "Gulley @ Rouge",  "full_name": "18.1 Gulley over River Rouge", "level":8}, "geometry": { "type": "Point", "coordinates": [ -83.28581008, 42.30191714 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8P2H+H93F", "h_bed":178.75, "h_sensor":182.67,"alert_level_in": 120,"display_name": "Telegraph @ Rouge", "full_name": "18.2 Telegraph over River Rouge", "level":8}, "geometry": { "type": "Point", "coordinates": [ -83.27158186, 42.30138972 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8P3P+HH59", "h_bed":177.5, "h_sensor":186.44,"alert_level_in": 120,"display_name": "Outer Drive @ Rouge",  "full_name": "18.3 Outer Drive over River Rouge", "level":8}, "geometry": { "type": "Point", "coordinates": [ -83.26350358, 42.30388155 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8P5W+CV95", "h_bed":176.75, "h_sensor":183.03,"alert_level_in": 120,"display_name": "Military @ Rouge", "full_name": "18.4 Military over River Rouge", "level":8}, "geometry": { "type": "Point", "coordinates": [ -83.25275459, 42.30852982 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8R22+98X8", "h_bed":174.25, "h_sensor":180.66,"alert_level_in": 120,"display_name": "Rotunda @ Rouge",  "full_name": "18.5 Rotunda over River Rouge", "level":8}, "geometry": { "type": "Point", "coordinates": [ -83.19913495, 42.30098118 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR7RVC+Q7VC", "h_bed":174, "h_sensor":180.05,"alert_level_in": 120,"display_name": "Greenfield @ Rouge", "full_name": "18.6 Greenfield over River Rouge", "level":8}, "geometry": { "type": "Point", "coordinates": [ -83.17933631, 42.29448528 ] } }
   ]
 };
 
@@ -47,22 +41,22 @@ const road_sensors = {
   "type": "FeatureCollection",
   "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
   "features": [
-  { "type": "Feature", "properties": { "site_code":"86JR8R75+5472", "h_bed":176.106, "h_sensor":179.232, "name": "1 Greenfield just south of Prospect","display_name":"Greenfield & Prospect", "level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.19221349, 42.31290205 ] } },
-  { "type": "Feature", "properties": { "site_code":"86JR8R9R+7V89", "h_bed":173.736, "h_sensor":180.69, "name": "3 Wyoming & Southern", "display_name":"Wyoming & Southern","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.15778164, 42.31815584 ] } },
-  { "type": "Feature", "properties": { "site_code":"86JR7PXP+WJ38", "h_bed":182.317, "h_sensor":185.453, "name": "4 Outer Drive south of Michigan Ave ", "display_name":"Outer Drive & Michigan","level":0, "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.26344977, 42.29975715 ] } },
-  { "type": "Feature", "properties": { "site_code":"86JR7PXH+R778", "h_bed":181.17, "h_sensor":188.341, "name": "5 Telegraph & Michigan ", "display_name":"Telegraph & Michigan","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.27182153, 42.29953459 ] } },
-  { "type": "Feature", "properties": { "site_code":"86JR8Q45+23QF", "h_bed":181.402, "h_sensor":184.528, "name": "9 Oakwood north of Park","display_name":"Oakwood & Park", "level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.24226994, 42.30508972 ] } },
-  { "type": "Feature", "properties": { "site_code":"86JR8Q5M+VX34", "h_bed":179.445, "h_sensor":182.6, "name": "11 M39 southbound ramp service drive & Michigan ","display_name":"M39 Southbound Ramp & Michigan", "level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.21507639, 42.30962931 ] } },
-  { "type": "Feature", "properties": { "site_code":"86JR8RFM+WHRQ", "h_bed":178.1556, "h_sensor":184.3, "name": "12 Michigan & Miller", "display_name":"Michigan & Miller","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.16609711, 42.32486819 ] } },
-  { "type": "Feature", "properties": { "site_code":"86JR7QXR+4P95", "h_bed":178.246, "h_sensor":180.773, "name": " 14 Rotunda just west of Southfield ", "display_name":"Rotunda & Southfield","level":0,"level_num":"",  "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.20812831, 42.29777586 ] } },
-  { "type": "Feature", "properties": { "site_code":"86JR8QH8+G4P2", "h_bed":182.83, "h_sensor":186.358, "name": "15 Ford & Evergreen","display_name":"Ford & Evergreen", "level":0,"level_num":"",  "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.234667, 42.32881 ] } },
-  { "type": "Feature", "properties": { "site_code":"86JR8R6W+627J", "h_bed":175.176, "h_sensor":180.017, "name": "17 Eagle Pass", "display_name":"Eagle Pass","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.15496174, 42.31054103 ] } },
-  { "type": "Feature", "properties": { "site_code":"86JR8RF7+RJX2", "h_bed":180.01, "h_sensor":183.08, "name": "21 Chase & Colson", "display_name":"Chase & Colson","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.18589932, 42.32460332 ] } },
-  { "type": "Feature", "properties": { "site_code":"86JR8R4F+8WQ2", "h_bed":174.21, "h_sensor":180.115, "name": "24.1 V-124, Grand Trunk\/Schaefer", "display_name":"Grand Trunk & Schaefer","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.17514948, 42.30582613 ] } },
-  { "type": "Feature", "properties": { "site_code":"86JR8RMF+QFG8", "h_bed":177.414, "h_sensor":180.586, "name": "24.3 V-126, Schaefer south of Hemlock", "display_name":"Schaefer and Hemlock","level":0,"level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.17629024, 42.33443414 ] } },
-  { "type": "Feature", "properties": { "site_code":"86JR8RHJ+V24G", "h_bed":176.95, "h_sensor":180.621, "name": "25.1 Oakman & Ford West", "display_name":"Oakman & Ford West","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.1699056, 42.3296398 ] } },
-  { "type": "Feature", "properties": { "site_code":"86JR8RHJ+HC6P", "h_bed":176.917, "h_sensor":180.04, "name": "25.2 Oakman & Ford South", "display_name":"Oakman & Ford South","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.16898354, 42.32891688 ] } },
-  { "type": "Feature", "properties": { "site_code":"86JR8RHM+R975", "h_bed":177.66, "h_sensor":180.73, "name": "25.3 Ford & Miller", "display_name":"Ford & Miller","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.16656388, 42.32952713 ] } }
+  { "type": "Feature", "properties": { "site_code":"86JR8R75+5472", "h_bed":176.106, "h_sensor":179.232, "alert_level_in": 4,"name": "1 Greenfield just south of Prospect","display_name":"Greenfield & Prospect", "level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.19221349, 42.31290205 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8R9R+7V89", "h_bed":173.736, "h_sensor":180.69, "alert_level_in": 4,"name": "3 Wyoming & Southern", "display_name":"Wyoming & Southern","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.15778164, 42.31815584 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR7PXP+WJ38", "h_bed":182.317, "h_sensor":185.453, "alert_level_in": 4,"name": "4 Outer Drive south of Michigan Ave ", "display_name":"Outer Drive & Michigan","level":0, "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.26344977, 42.29975715 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR7PXH+R778", "h_bed":181.17, "h_sensor":188.341, "alert_level_in": 4,"name": "5 Telegraph & Michigan ", "display_name":"Telegraph & Michigan","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.27182153, 42.29953459 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8Q45+23QF", "h_bed":181.402, "h_sensor":184.528, "alert_level_in": 4,"name": "9 Oakwood north of Park","display_name":"Oakwood & Park", "level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.24226994, 42.30508972 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8Q5M+VX34", "h_bed":179.445, "h_sensor":182.6, "alert_level_in": 4,"name": "11 M39 southbound ramp service drive & Michigan ","display_name":"M39 Southbound Ramp & Michigan", "level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.21507639, 42.30962931 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8RFM+WHRQ", "h_bed":178.1556, "h_sensor":184.3, "alert_level_in": 4,"name": "12 Michigan & Miller", "display_name":"Michigan & Miller","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.16609711, 42.32486819 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR7QXR+4P95", "h_bed":178.246, "h_sensor":180.773, "alert_level_in": 4,"name": " 14 Rotunda just west of Southfield ", "display_name":"Rotunda & Southfield","level":0,"level_num":"",  "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.20812831, 42.29777586 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8QH8+G4P2", "h_bed":182.83, "h_sensor":186.358, "alert_level_in": 4, "name": "15 Ford & Evergreen","display_name":"Ford & Evergreen", "level":0,"level_num":"",  "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.234667, 42.32881 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8R6W+627J", "h_bed":175.176, "h_sensor":180.017, "alert_level_in": 4,"name": "17 Eagle Pass", "display_name":"Eagle Pass","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.15496174, 42.31054103 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8RF7+RJX2", "h_bed":180.01, "h_sensor":183.08, "alert_level_in": 4,"name": "21 Chase & Colson", "display_name":"Chase & Colson","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.18589932, 42.32460332 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8R4F+8WQ2", "h_bed":174.21, "h_sensor":180.115, "alert_level_in": 4,"name": "24.1 V-124, Grand Trunk\/Schaefer", "display_name":"Grand Trunk & Schaefer","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.17514948, 42.30582613 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8RMF+QFG8", "h_bed":177.414, "h_sensor":180.586, "alert_level_in": 4,"name": "24.3 V-126, Schaefer south of Hemlock", "display_name":"Schaefer and Hemlock","level":0,"level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.17629024, 42.33443414 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8RHJ+V24G", "h_bed":176.95, "h_sensor":180.621, "alert_level_in": 4,"name": "25.1 Oakman & Ford West", "display_name":"Oakman & Ford West","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.1699056, 42.3296398 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8RHJ+HC6P", "h_bed":176.917, "h_sensor":180.04, "alert_level_in": 4,"name": "25.2 Oakman & Ford South", "display_name":"Oakman & Ford South","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.16898354, 42.32891688 ] } },
+  { "type": "Feature", "properties": { "site_code":"86JR8RHM+R975", "h_bed":177.66, "h_sensor":180.73, "alert_level_in": 4,"name": "25.3 Ford & Miller", "display_name":"Ford & Miller","level":0, "level_num":"", "last_updated":""}, "geometry": { "type": "Point", "coordinates": [ -83.16656388, 42.32952713 ] } }
   ]  
 }   
 
@@ -194,7 +188,8 @@ function Map() {
     fetchDataFromInfluxDB(geojsonData)
     
       .then(data => {
-        console.log(geojsonData.features.map(f => f.properties.site_code));
+        console.log(data)
+        //console.log(geojsonData.features.map(f => f.properties.site_code));
 
         // Process and use the data to update the map
         //console.log(data);
@@ -207,8 +202,9 @@ function Map() {
               //console.log(site_data)
               const site_code = site_data.site_code;
               const latestValue = site_data.data[0].value;
+              const alert_status = site_data.alert_status;
               const latestTimestamp = site_data.latestTimestamp;
-              const color = Number(latestValue) > 4 ? 'rgb(242, 73, 92)' : 'rgb(115, 191, 105)';
+              const color = alert_status ? 'rgb(242, 73, 92)' : 'rgb(115, 191, 105)';
               if (color === 'rgb(242, 73, 92)') {
                 isAnyFloodingDetected = true;
             }

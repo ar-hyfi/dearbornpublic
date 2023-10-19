@@ -1,26 +1,44 @@
 // DisclaimerDialog.js
 import React from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Button from '@mui/material/Button';
+import { 
+    Dialog, DialogActions, DialogContent, 
+    DialogContentText, DialogTitle, Button, 
+    ThemeProvider, createTheme 
+} from '@mui/material';
+
+const darkTheme = createTheme({
+    palette: {
+        mode: 'dark',
+        primary: {
+            main: '#E6E6E6', // A common color for primary text in Mapbox dark mode
+        },
+        background: {
+            default: '#2E2E2E', // Mapbox dark mode background color
+            paper: '#3C3C3C', // For elevated components in dark mode
+        },
+        text: {
+            primary: '#E6E6E6', // Mapbox dark mode text color
+            secondary: '#A8A8A8', // Slightly dimmed text color
+        },
+    },
+});
 
 export default function DisclaimerDialog({ open, handleClose }) {
   return (
-    <Dialog open={open} onClose={handleClose} aria-labelledby="disclaimer-dialog-title">
-      <DialogTitle id="disclaimer-dialog-title">Disclaimer</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          This data is only meant as a guidance. Use your best judgement. We can't guarantee anything. Don't sue us if your car floats away.
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} color="primary">
-          Accept
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <ThemeProvider theme={darkTheme}>
+        <Dialog open={open} onClose={handleClose} aria-labelledby="disclaimer-dialog-title">
+            <DialogTitle id="disclaimer-dialog-title">Disclaimer</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    This data is only meant as a guidance. Use your best judgement. We can't guarantee anything. Don't sue us if your car floats away.
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleClose} color="primary">
+                    Accept
+                </Button>
+            </DialogActions>
+        </Dialog>
+    </ThemeProvider>
   );
 }

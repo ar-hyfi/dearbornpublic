@@ -64,14 +64,27 @@ export async function fetchDataFromInfluxDB(markerData) {
 
                     const maxbotix_depth = _value;  // Assuming _value corresponds to maxbotix_depth. Adjust if not.
                     var level = (marker.properties.h_sensor - (maxbotix_depth / 1000.0) - marker.properties.h_bed) * m2in;
+                    
+                    if(site_code === "86JR8R6W+627J") {
+                        level = level - 4;
+                    }
+        
+                    // Chase & Colson needs to be re-surveyed. in the meantime, we manually correct with constants derived from historical data
+                    if(site_code === "86JR8RF7+RJX2") {
+                        level = level - 5;
+                    }
+
                     if(level < 0) {
                         level = 0.01;
                     }
 
+                    var alert_status = marker.properties.level > marker.properties.alert_level_in;
+
+
                     // If site_name is defined, add the data to organizedData
                     if (site_name) {
                         if (!organizedData[site_name]) {
-                            organizedData[site_name] = { site_code, data: [] };
+                            organizedData[site_name] = { site_code, data: [], alert_status };
                         }
                         // Store level instead of raw value
                         organizedData[site_name].data.push({ timestamp: _time, value: level });

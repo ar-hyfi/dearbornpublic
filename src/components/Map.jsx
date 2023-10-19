@@ -9,7 +9,7 @@ import './Map.css'
 import { fetchDataFromInfluxDB } from '../services/influxDB';
 import Alert from '@mui/material/Alert';
 import Container from '@mui/material/Container';
-
+import Legend from './Legend';
 
 // Make sure to set your Mapbox token here
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -277,6 +277,8 @@ function Map() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 
         <div id="map" style={{ flex: 1, width: '100%' }}>
+        <Legend />
+
         {/* <Container maxWidth="sm" style={{ position: 'absolute', top: '5%', left: '50%', transform: 'translateX(-50%)', zIndex: 1000 }}>
             {floodingDetected === 'detected' && (
                 <Alert severity="error">Flooding detected!</Alert>

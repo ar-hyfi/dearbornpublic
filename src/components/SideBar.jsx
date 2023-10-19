@@ -2,7 +2,7 @@
 import React from 'react';
 import { 
   Accordion, AccordionSummary, AccordionDetails, 
-  Typography, ThemeProvider, createTheme 
+  Typography, ThemeProvider, createTheme, Button 
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -32,6 +32,14 @@ const faqs = [
         question: 'How often is the data updated?',
         answer: 'The data is updated every hour.',
     },
+    {
+        question: 'Where does this data come from?',
+        answer: 'Sensors!',
+    },
+    {
+        question: 'Where can I learn more?',
+        answer: 'Sensors!',
+    },
     // ... Add more FAQs as needed
 ];
 
@@ -39,17 +47,18 @@ function SideBar() {
     return (
         <ThemeProvider theme={darkTheme}>
             <div style={{ backgroundColor: darkTheme.palette.background.default, color: darkTheme.palette.text.primary, width: '100%', padding: '0.5em' }}>
+                <Typography variant="h6" style={{ marginBottom: '1em' }}>FAQs</Typography> {/* Added a title */}
                 {faqs.map((faq, index) => (
-                    <Accordion key={index} style={{ backgroundColor: darkTheme.palette.background.paper, color: darkTheme.palette.text.primary }}>
+                    <Accordion key={index} style={{ backgroundColor: darkTheme.palette.background.paper, color: darkTheme.palette.text.primary, marginTop: '1em' }}>
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
                             aria-controls={`faq-panel-content-${index}`}
                             id={`faq-panel-header-${index}`}
                         >
-                            <Typography variant="h6">{faq.question}</Typography>
+                            <Typography variant="subtitle1">{faq.question}</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Typography>
+                            <Typography variant="body2">
                                 {faq.answer}
                             </Typography>
                         </AccordionDetails>

@@ -8,6 +8,9 @@ import { Button, Typography } from '@mui/material';
 import axios from 'axios';
 import './Map.css'
 import { fetchDataFromInfluxDB } from '../services/influxDB';
+import riverBridges from '../geojsons/river_bridges.geojson';
+import roadSensors from '../geojsons/road_sensors.geojson';
+
 // Make sure to set your Mapbox token here
 // eslint-disable-next-line import/no-webpack-loader-syntax
 mapboxgl.workerClass = require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default;
@@ -224,8 +227,8 @@ function Map() {
 
 
 
-  const river_bridges = '/static/media/river_bridges.073ce61ee13e34f202dd.geojson'
-  const road_sensors = '/static/media/road_sensors.1f5c7a1e3f754e92f2dd.geojson'
+  // const river_bridges = '/static/media/river_bridges.073ce61ee13e34f202dd.geojson' 
+  // const road_sensors = '/static/media/road_sensors.1f5c7a1e3f754e92f2dd.geojson'
 
   useEffect(() => {
     async function fetchGeoJsonData() {

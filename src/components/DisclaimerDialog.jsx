@@ -13,7 +13,7 @@ export default function DisclaimerDialog({ open, handleClose }) {
       <DialogTitle id="disclaimer-dialog-title">Disclaimer</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          This data is only meant as a guidance. Use your best judgement. We can't guarantee anything.
+          This data is only meant as a guidance. Use your best judgement. We can't guarantee anything. Don't sue us if your car floats away.
         </DialogContentText>
       </DialogContent>
       <DialogActions>

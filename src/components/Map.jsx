@@ -69,11 +69,8 @@ function Map() {
   const [darkMode, setDarkMode] = useState(true); // in case we want to be able to switch between dark and light mode later
   const [geojsonData, setGeojsonData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
 
-
-
-  // const river_bridges = '/static/media/river_bridges.073ce61ee13e34f202dd.geojson' 
-  // const road_sensors = '/static/media/road_sensors.1f5c7a1e3f754e92f2dd.geojson'
 
   useEffect(() => {
     try {
@@ -82,7 +79,7 @@ function Map() {
                 type: "FeatureCollection",
                 features: [...river_bridges.features, ...road_sensors.features]
             });
-            console.log(geojsonData)
+            //console.log(geojsonData)
         } else {
             console.error("One of the GeoJSON files does not have the expected format.");
         }
@@ -109,6 +106,7 @@ function Map() {
     setMap(mapInstance);
 
     mapInstance.on('load', () => {
+      setIsMapLoaded(true);
       mapInstance.resize();
       
     // Check if GeoJSON data is available
@@ -162,7 +160,7 @@ function Map() {
 
   // Fetch data from InfluxDB and update the map
   useEffect(() => {
-    if (!map) return;  // Don't run the rest of the code if map isn't available
+    if (!isMapLoaded) return;  // Don't run the rest of the code if map isn't available
     if (!geojsonData || !Array.isArray(geojsonData.features) || geojsonData.features.length === 0) return;
 
     setLoading(true);  // Start the spinner
@@ -170,39 +168,31 @@ function Map() {
     //const siteCodes = geojsonData.features.map(f => f.properties.siteCode);
     
     fetchDataFromInfluxDB(geojsonData)
+    
       .then(data => {
+        console.log(geojsonData.features.map(f => f.properties.site_code));
+
         // Process and use the data to update the map
         //console.log(data);
         if (map) {  // Ensure that the map instance is available
+          let matchExpression = ['match', ['get', 'site_code']];
 
           Object.entries(data).forEach(([site_name, site_data]) => {
+              const site_code = site_data.site_code;
+              const latestValue = site_data.data[0].value;
+              const color = Number(latestValue) > 4 ? 'red' : 'green';
 
-            const site_code = site_data.site_code;
-            console.log(data)
-            const latestValue = site_data.data[0].value;  // Assuming data is an array and the latest value is the first item
-            const latestTimestamp = site_data.latestTimestamp;  // Assuming data is an array and the latest value is the first item
-            //console.log(typeof(latestValue))
-            //console.log(latestValue)
-            if (!site_code) {
-              console.warn(`Site code is undefined for site: ${site_name}. Skipping update for this site.`);
-              return;  // Skip this iteration and proceed to the next site
-          }
-            // Determine the color based on the latest value
-            const color = latestValue > 4 ? 'red' : 'green';
-
-            // Update the color of the site on the map
-            //console.log('is map', map)
-            map.setFilter('points', ['==', ['get', 'site_code'], site_code]);  // Filter for this specific site
-            map.setPaintProperty('points', 'circle-color', color);
-            // map.setFilter('point-labels', ['==', ['get', 'site_code'], site_code]);  // Filter for this specific site
-            // map.setPaintProperty('point-labels', 'text-color', color);
+              // Add the site code and its color to the match expression
+              matchExpression.push(site_code, color);
           });
-          
-          // Remove filter to show all points again
-          map.setFilter('points', null);
+
+          // Add the default color at the end of the expression
+          matchExpression.push('white');
+
+          if (map && map.getLayer('points')) {
+              map.setPaintProperty('points', 'circle-color', matchExpression);
+          }
         }
-
-
 
         setLoading(false);  // Stop the spinner once the data is fetched
       })
@@ -211,7 +201,9 @@ function Map() {
         setLoading(false);  // Stop the spinner if there's an error
       });
       
-  }, [geojsonData, map]);
+  }, [geojsonData, map, isMapLoaded]);
+
+
   // implementation of toggle to switch between dark and light mode
   // const toggleMapMode = () => {
   //   const mapContainer = document.getElementById("map");

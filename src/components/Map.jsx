@@ -4,6 +4,7 @@ import mapboxgl from 'mapbox-gl';
 import './Map.css'
 import { fetchDataFromInfluxDB } from '../services/influxDB';
 import Legend from './Legend';
+import Spinner from './Spinner';
 
 // Make sure to set your Mapbox token here
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -285,19 +286,7 @@ function Map() {
             )}
         </Container> */}
         {loading && (
-            <div style={{
-              position: 'absolute',
-              top: '10%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              zIndex: 1000,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}>
-              <div className="spinner"></div>
-              <p>Data Loading...</p>
-            </div>
+            <Spinner />
           )}
         </div>
     </div>

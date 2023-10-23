@@ -2,9 +2,10 @@
 import React from 'react';
 import { 
   Accordion, AccordionSummary, AccordionDetails, 
-  Typography, ThemeProvider, createTheme, Button 
+  Typography, ThemeProvider, createTheme 
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { styled } from '@mui/system';
 
 const darkTheme = createTheme({
     palette: {
@@ -43,30 +44,41 @@ const faqs = [
     // ... Add more FAQs as needed
 ];
 
+const SideBarContainer = styled('div')(({ theme }) => ({
+    backgroundColor: theme.palette.background.default,
+    color: theme.palette.text.primary,
+    width: '100%', // or any other value based on your desktop design
+    padding: '0.5em',
+  
+    '@media (max-width: 768px)': {
+      width: '100%', // accordion takes the full width on mobile devices
+    },
+  }));
+
 function SideBar() {
     return (
-        <ThemeProvider theme={darkTheme}>
-            <div style={{ backgroundColor: darkTheme.palette.background.default, color: darkTheme.palette.text.primary, width: '100%', padding: '0.5em' }}>
-                <Typography variant="h6" style={{ marginBottom: '1em' }}>FAQs</Typography> {/* Added a title */}
-                {faqs.map((faq, index) => (
-                    <Accordion key={index} style={{ backgroundColor: darkTheme.palette.background.paper, color: darkTheme.palette.text.primary, marginTop: '1em' }}>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls={`faq-panel-content-${index}`}
-                            id={`faq-panel-header-${index}`}
-                        >
-                            <Typography variant="subtitle1">{faq.question}</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Typography variant="body2">
-                                {faq.answer}
-                            </Typography>
-                        </AccordionDetails>
-                    </Accordion>
-                ))}
-            </div>
-        </ThemeProvider>
-    );
+            <ThemeProvider theme={darkTheme}>
+                <SideBarContainer>
+                    <Typography variant="h6" style={{ marginBottom: '1em' }}>FAQs</Typography>
+                    {faqs.map((faq, index) => (
+                        <Accordion key={index} style={{ backgroundColor: darkTheme.palette.background.paper, color: darkTheme.palette.text.primary, marginTop: '1em' }}>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls={`faq-panel-content-${index}`}
+                                id={`faq-panel-header-${index}`}
+                            >
+                                <Typography variant="subtitle1">{faq.question}</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Typography variant="body2">
+                                    {faq.answer}
+                                </Typography>
+                            </AccordionDetails>
+                        </Accordion>
+                    ))}
+                </SideBarContainer>
+            </ThemeProvider>
+        );
 }
 
 export default SideBar;

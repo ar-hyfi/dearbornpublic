@@ -8,7 +8,7 @@ import DisclaimerDialog from './components/DisclaimerDialog';
 
 //import river_bridges from './geojsons/river_bridges.geojson';
 //import road_sensors from './geojsons/road_sensors.geojson';
-import { Grid } from '@mui/material';
+import { Grid, Hidden } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 
@@ -31,7 +31,8 @@ function App() {
   };
 
   return (
-    <div>
+
+<div>
     <DisclaimerDialog open={!acceptedDisclaimer} handleClose={handleClose} />
     {/* Your app content, which will be displayed after the user accepts the disclaimer */}
     {acceptedDisclaimer && (
@@ -40,25 +41,24 @@ function App() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <Header />
       <main style={{ flexGrow: 1, overflow: 'hidden' }}>
-        <Grid container style={{ height: '100%' }}>
-          <Grid item xs={10} style={{ height: '100%' }}>
+        <Grid container spacing={0} style={{ height: '100%' }}>
+          {/* The Map component will take the full width on small screens (xs) and medium or above */}
+          <Grid item xs={12} md={10} style={{ height: 'calc(100% - 64px)' }}> {/* Assuming header height is 64px */}
             <Map />
           </Grid>
-          <Grid item xs={2} style={{ height: '100%', overflowY: 'auto' }}>
-            <SideBar />
-          </Grid>
+          {/* The SideBar will be hidden on small screens (xs) */}
+          <Hidden smDown>
+            <Grid item md={2} style={{ overflowY: 'auto' }}>
+              <SideBar />
+            </Grid>
+          </Hidden>
         </Grid>
       </main>
     </div>
-    
     </ThemeProvider>
     )}
-    </div>
+</div>
   );
 }
 
-
 export default App;
-          // <Grid item xs={4}>
-            {/* {geoData && <SideBar geojsonData={geoData} />} */}
-          // </Grid>

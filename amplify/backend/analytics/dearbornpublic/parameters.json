@@ -1,0 +1,21 @@
+{
+    "appName": "dearbornpublic",
+    "roleName": "pinpointLambdaRole13d1dbd5",
+    "cloudformationPolicyName": "cloudformationPolicy13d1dbd5",
+    "cloudWatchPolicyName": "cloudWatchPolicy13d1dbd5",
+    "pinpointPolicyName": "pinpointPolicy13d1dbd5",
+    "authPolicyName": "pinpoint_amplify_13d1dbd5",
+    "unauthPolicyName": "pinpoint_amplify_13d1dbd5",
+    "authRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "unauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "authRoleArn": {
+        "Fn::GetAtt": [
+            "AuthRole",
+            "Arn"
+        ]
+    }
+}

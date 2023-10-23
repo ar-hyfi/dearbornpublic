@@ -16,7 +16,7 @@ export function convertUTCToHoursMinutesFromNow(utcString) {
 
     if (minutes > 0) {
         if (hours > 0) {
-        resultString += " and ";
+        resultString += " ";
         }
         resultString += `${minutes} ${minutes === 1 ? 'min' : 'min'}`;
     }

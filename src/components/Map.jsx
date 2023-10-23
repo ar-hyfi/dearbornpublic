@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import mapboxgl from 'mapbox-gl';
 import './Map.css'
@@ -69,7 +69,7 @@ function Map() {
   const [loading, setLoading] = useState(false); //  for getting data from influx
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [floodingDetected, setFloodingDetected] = useState(null); // null, 'detected', 'none'
-
+  const updateInterval = useRef(null)
 
 
   useEffect(() => {
@@ -88,9 +88,7 @@ function Map() {
     }
 }, []);
 
-
-
-
+  // Initialize the map
   useEffect(() => {
     const mapStyle = darkMode ? 'mapbox://styles/mapbox/dark-v10' : 'mapbox://styles/mapbox/light-v10';
 
@@ -164,6 +162,37 @@ function Map() {
         }
       });
 
+      mapInstance.addLayer({
+        id: '3d-buildings',
+        source: 'composite',
+        'source-layer': 'building',
+        filter: ['==', 'extrude', 'true'],
+        type: 'fill-extrusion',
+        minzoom: 5, // Set the minimum zoom level to display buildings
+        paint: {
+          'fill-extrusion-color': '#aaa', // Building color
+          'fill-extrusion-height': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            15,
+            0,
+            15.05,
+            ['get', 'height'],
+          ],
+          'fill-extrusion-base': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            15,
+            0,
+            15.05,
+            ['get', 'min_height'],
+          ],
+          'fill-extrusion-opacity': 0.6,
+        },
+      });
+
     // const bounds = getBounds(geojsonData.features);
     // if (mapInstance) {
     //   mapInstance.fitBounds(bounds, { padding: 30 });
@@ -185,8 +214,6 @@ function Map() {
     if (!geojsonData || !Array.isArray(geojsonData.features) || geojsonData.features.length === 0) return;
 
     setLoading(true);  // Start the spinner
-  
-    //const siteCodes = geojsonData.features.map(f => f.properties.siteCode);
     
     fetchDataFromInfluxDB(geojsonData)
     
@@ -253,7 +280,82 @@ function Map() {
         console.error("Error fetching data from InfluxDB:", error);
         setLoading(false);  // Stop the spinner if there's an error
       });
-      
+
+      updateInterval.current = setInterval(() => {
+        fetchDataFromInfluxDB(geojsonData)
+    
+        .then(data => {
+          //console.log(data)
+          //console.log(geojsonData.features.map(f => f.properties.site_code));
+  
+          // Process and use the data to update the map
+          //console.log(data);
+          if (map) {  // Ensure that the map instance is available
+            let matchExpression = ['match', ['get', 'site_code']];
+            let timestampExpression = ['match', ['get', 'site_code']];
+  
+            let isAnyFloodingDetected = false;
+            Object.entries(data).forEach(([site_name, site_data]) => {
+                //console.log(site_data)
+                const site_code = site_data.site_code;
+                const latestValue = site_data.data[0].value;
+                const alert_status = site_data.alert_status;
+                const latestTimestamp = site_data.latestTimestamp;
+                const color = alert_status ? 'rgb(242, 73, 92)' : 'rgb(115, 191, 105)';
+                if (color === 'rgb(242, 73, 92)') {
+                  isAnyFloodingDetected = true;
+              }
+  
+                // Add the site code and its color to the match expression
+                matchExpression.push(site_code, color);
+                timestampExpression.push(site_code, latestTimestamp);
+  
+            });
+            if (isAnyFloodingDetected) {
+              setFloodingDetected('detected');
+            } else {
+                  setFloodingDetected('none');
+              }
+  
+            // Add the default color at the end of the expression
+            matchExpression.push('white');
+            timestampExpression.push('');
+  
+            if (map) {
+              if (map.getLayer('points')) {
+                  map.setPaintProperty('points', 'circle-color', matchExpression);
+              }
+          
+              if (map.getLayer('point-labels')) {
+                map.setPaintProperty('point-labels', 'text-halo-color', 'black');  // Setting the halo color to white
+                map.setPaintProperty('point-labels', 'text-halo-width', 1);  
+                map.setPaintProperty('point-labels', 'text-color', matchExpression);
+                map.setLayoutProperty('point-labels', 'text-field', timestampExpression);
+              }
+  
+              if (map.getLayer('point-labels-names')) {
+                map.setPaintProperty('point-labels-names', 'text-halo-color', 'black');  // Setting the halo color to white
+                map.setPaintProperty('point-labels-names', 'text-halo-width', 1);  
+                map.setPaintProperty('point-labels-names', 'text-color', matchExpression);
+              }
+          }
+          }
+  
+          setLoading(false);  // Stop the spinner once the data is fetched
+        })
+        .catch(error => {
+          console.error("Error fetching data from InfluxDB:", error);
+          setLoading(false);  // Stop the spinner if there's an error
+        });
+      }, 60000); // 1/2 hour
+
+      // clean up on umount
+      return () => {
+        if (updateInterval.current) {
+            clearInterval(updateInterval.current);
+        }
+    };
+
   }, [geojsonData, map, isMapLoaded]);
 
 

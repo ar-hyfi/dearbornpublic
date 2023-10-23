@@ -10,6 +10,14 @@
       "StackName": "amplify-amplify7a79e1be84434-staging-192010",
       "StackId": "arn:aws:cloudformation:us-east-2:158058530801:stack/amplify-amplify7a79e1be84434-staging-192010/3095bfa0-6d22-11ee-bb22-02690c49b1b1",
       "AmplifyAppId": "d1dj55rci2oe03"
+    },
+    "categories": {
+      "auth": {
+        "dearbornpublic": {}
+      },
+      "analytics": {
+        "dearbornpublic": {}
+      }
     }
   }
 }

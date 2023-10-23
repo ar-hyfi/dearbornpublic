@@ -1,1 +1,26 @@
-{}
+{
+  "analytics": {
+    "dearbornpublic": {
+      "providerPlugin": "awscloudformation",
+      "service": "Pinpoint"
+    }
+  },
+  "auth": {
+    "dearbornpublic": {
+      "dependsOn": [],
+      "frontendAuthConfig": {
+        "mfaTypes": [],
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": []
+        },
+        "signupAttributes": [],
+        "socialProviders": [],
+        "usernameAttributes": [],
+        "verificationMechanisms": []
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito",
+      "serviceType": "managed"
+    }
+  }
+}

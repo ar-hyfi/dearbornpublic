@@ -12,7 +12,13 @@ import { Grid, Hidden } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 
+
+
 import { createTheme } from '@mui/material/styles';
+
+import { Amplify, Analytics } from 'aws-amplify';
+import awsconfig from './aws-exports';
+Amplify.configure(awsconfig);
 
 const globalTheme = createTheme({
   palette: {

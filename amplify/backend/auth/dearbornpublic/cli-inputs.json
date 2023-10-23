@@ -1,0 +1,12 @@
+{
+  "version": "1",
+  "cognitoConfig": {
+    "identityPoolName": "dearbornpublic_identitypool_2102c1fb",
+    "allowUnauthenticatedIdentities": true,
+    "authSelections": "identityPoolOnly",
+    "resourceName": "dearbornpublic",
+    "sharedId": "2102c1fb",
+    "serviceName": "Cognito",
+    "useDefault": "manual"
+  }
+}

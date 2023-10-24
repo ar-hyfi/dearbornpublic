@@ -30,8 +30,8 @@ export default function DisclaimerDialog({ open, handleClose }) {
             <DialogTitle id="disclaimer-dialog-title">Disclaimer</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    This data is only meant as a guidance. Use your best judgement. We can't guarantee anything. Don't sue us if your car floats away.
-                </DialogContentText>
+
+                The information herein is for general guidance only. Exercise independent judgment when using this data. No warranties, express or implied, are provided. The provider is not liable for any resulting damages or losses.                </DialogContentText>
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} color="primary">

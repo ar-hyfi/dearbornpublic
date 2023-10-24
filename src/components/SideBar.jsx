@@ -27,19 +27,19 @@ const darkTheme = createTheme({
 const faqs = [
     {
         question: 'What is the purpose of this site?',
-        answer: 'The purpose of this site is to display information about river bridges and road sensors.',
+        answer: 'This site provides real-time road flooding information based on data from a network of sensors to help Dearborn residents make informed travel decisions during inclement weather.',
     },
     {
         question: 'How often is the data updated?',
         answer: 'The data is updated every hour.',
     },
     {
-        question: 'Where does this data come from?',
-        answer: 'Sensors!',
+        question: 'How does the sensor network work?',
+        answer: 'Ultrasonic sensors emit sound waves and measure the time it takes for the waves to return after hitting an obstacle. In this context, they detect the level of water on the roads and provide accurate measurements of flooding depth.',
     },
     {
         question: 'Where can I learn more?',
-        answer: 'Sensors!',
+        answer: 'Read MiNextCities\' article about this project at https://minextcities.org/dearborn/". To learn more about the company behind the sensor network and this dashboard, visit https://hyfi.io/.',
     },
     // ... Add more FAQs as needed
 ];

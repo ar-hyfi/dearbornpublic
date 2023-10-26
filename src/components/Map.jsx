@@ -96,7 +96,7 @@ function Map() {
       container: 'map',
       style: mapStyle,
       center: [-83.20130880622676, 42.31766379470411],
-      zoom: 12,
+      zoom: 12.3,
       pitch: 45,
       bearing: -17.6,
     });

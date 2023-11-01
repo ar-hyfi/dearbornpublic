@@ -6,23 +6,9 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { styled } from '@mui/system';
+import { useContext } from 'react';
+import { ThemeContext } from '../ThemeContext';
 
-const darkTheme = createTheme({
-    palette: {
-        mode: 'dark',
-        primary: {
-            main: '#E6E6E6', // A common color for primary text in Mapbox dark mode
-        },
-        background: {
-            default: '#2E2E2E', // Mapbox dark mode background color
-            paper: '#3C3C3C', // For elevated components in dark mode
-        },
-        text: {
-            primary: '#E6E6E6', // Mapbox dark mode text color
-            secondary: '#A8A8A8', // Slightly dimmed text color
-        },
-    },
-});
 
 const faqs = [
     {
@@ -44,24 +30,19 @@ const faqs = [
     // ... Add more FAQs as needed
 ];
 
-const SideBarContainer = styled('div')(({ theme }) => ({
-    backgroundColor: theme.palette.background.default,
-    color: theme.palette.text.primary,
-    width: '100%', // or any other value based on your desktop design
-    padding: '0.5em',
-  
-    '@media (max-width: 768px)': {
-      width: '100%', // accordion takes the full width on mobile devices
-    },
-  }));
 
 function SideBar() {
+
+    const { currentThemeStyles } = useContext(ThemeContext);
+    const backgroundColor = currentThemeStyles.backgroundColor;
+    const textOutlineColor = currentThemeStyles.mapTextOutline;
+    const textColor = currentThemeStyles.textColor;
+
     return (
-            <ThemeProvider theme={darkTheme}>
-                <SideBarContainer>
-                    <Typography variant="h6" style={{ marginBottom: '1em' }}>FAQs</Typography>
+                <div>
+                    <Typography variant="h6" style={{ marginBottom: '1em', color: textColor }}>FAQs</Typography>
                     {faqs.map((faq, index) => (
-                        <Accordion key={index} style={{ backgroundColor: darkTheme.palette.background.paper, color: darkTheme.palette.text.primary, marginTop: '1em' }}>
+                        <Accordion key={index} style={{ backgroundColor: backgroundColor, color: textColor, marginTop: '1em' }}>
                             <AccordionSummary
                                 expandIcon={<ExpandMoreIcon />}
                                 aria-controls={`faq-panel-content-${index}`}
@@ -76,8 +57,7 @@ function SideBar() {
                             </AccordionDetails>
                         </Accordion>
                     ))}
-                </SideBarContainer>
-            </ThemeProvider>
+                </div>
         );
 }
 

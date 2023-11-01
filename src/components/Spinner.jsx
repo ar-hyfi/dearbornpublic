@@ -1,8 +1,15 @@
 import React from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
+import { ThemeContext } from '../ThemeContext';
+import { useContext } from 'react';
 
 function Spinner() {
+    const { currentThemeStyles } = useContext(ThemeContext);
+    const backgroundColor = currentThemeStyles.backgroundColor;
+    const textOutlineColor = currentThemeStyles.mapTextOutline;
+    const textColor = currentThemeStyles.textColor;
+
     return (
         <div style={{
             position: 'absolute',
@@ -13,7 +20,7 @@ function Spinner() {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            backgroundColor: '#3C3C3C',
+            backgroundColor: backgroundColor,
             padding: '10px',
             borderRadius: '5px',
             border: '1px solid #E6E6E6',

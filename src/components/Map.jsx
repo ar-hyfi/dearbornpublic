@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import { ThemeContext } from '../ThemeContext'; // Adjust the import path as needed
+
 
 import mapboxgl from 'mapbox-gl';
 import './Map.css'
@@ -70,6 +72,12 @@ function Map() {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [floodingDetected, setFloodingDetected] = useState(null); // null, 'detected', 'none'
   const updateInterval = useRef(null)
+  const { currentThemeStyles } = useContext(ThemeContext);
+  console.log('currentThemeStyles', currentThemeStyles)
+
+  // Now you can use currentThemeStyles in your component
+  // For instance, you can access the mapStyle for Mapbox as follows:
+
 
 
   useEffect(() => {
@@ -89,8 +97,13 @@ function Map() {
 }, []);
 
   // Initialize the map
-  useEffect(() => {
-    const mapStyle = darkMode ? 'mapbox://styles/mapbox/dark-v10' : 'mapbox://styles/mapbox/light-v10';
+  useEffect(() => {  
+    
+    const mapStyle = currentThemeStyles.mapStyle;
+
+  // And if you are using inline styles or need to pass the theme colors to components:
+    const mapTextOutline = currentThemeStyles.mapTextOutline;
+    //console.log('mapTextOutline', mapTextOutline)
 
     const mapInstance = new mapboxgl.Map({
       container: 'map',
@@ -122,7 +135,7 @@ function Map() {
         'paint': {
           'circle-radius': 8,
           'circle-color': 'white',
-          'circle-stroke-color': 'black',
+          'circle-stroke-color': mapTextOutline,
           'circle-stroke-width': 1,
         },
         'filter': ['==', '$type', 'Point'],
@@ -156,7 +169,7 @@ function Map() {
         },
         'paint': {
           "text-color": "#ffffff",
-          "text-halo-color": "black",
+          "text-halo-color": mapTextOutline,
           "text-halo-width": 1,
           
         }
@@ -206,7 +219,7 @@ function Map() {
 
 
     return () => mapInstance.remove(); // Cleanup on unmount
-  }, [darkMode, geojsonData]);
+  }, [currentThemeStyles, geojsonData]);
 
   // Fetch data from InfluxDB and update the map
   useEffect(() => {
@@ -214,7 +227,7 @@ function Map() {
     if (!geojsonData || !Array.isArray(geojsonData.features) || geojsonData.features.length === 0) return;
 
     setLoading(true);  // Start the spinner
-    
+    const mapTextOutline  = currentThemeStyles.mapTextOutline;
     fetchDataFromInfluxDB(geojsonData)
     
       .then(data => {
@@ -260,14 +273,14 @@ function Map() {
             }
         
             if (map.getLayer('point-labels')) {
-              map.setPaintProperty('point-labels', 'text-halo-color', 'black');  // Setting the halo color to white
+             map.setPaintProperty('point-labels', 'text-halo-color', mapTextOutline);  // Setting the halo color to white
               map.setPaintProperty('point-labels', 'text-halo-width', 1);  
               map.setPaintProperty('point-labels', 'text-color', matchExpression);
               map.setLayoutProperty('point-labels', 'text-field', timestampExpression);
             }
 
             if (map.getLayer('point-labels-names')) {
-              map.setPaintProperty('point-labels-names', 'text-halo-color', 'black');  // Setting the halo color to white
+              map.setPaintProperty('point-labels-names', 'text-halo-color', mapTextOutline);  // Setting the halo color to white
               map.setPaintProperty('point-labels-names', 'text-halo-width', 1);  
               map.setPaintProperty('point-labels-names', 'text-color', matchExpression);
             }
@@ -327,14 +340,14 @@ function Map() {
               }
           
               if (map.getLayer('point-labels')) {
-                map.setPaintProperty('point-labels', 'text-halo-color', 'black');  // Setting the halo color to white
+                map.setPaintProperty('point-labels', 'text-halo-color', mapTextOutline);  // Setting the halo color to white
                 map.setPaintProperty('point-labels', 'text-halo-width', 1);  
                 map.setPaintProperty('point-labels', 'text-color', matchExpression);
                 map.setLayoutProperty('point-labels', 'text-field', timestampExpression);
               }
   
               if (map.getLayer('point-labels-names')) {
-                map.setPaintProperty('point-labels-names', 'text-halo-color', 'black');  // Setting the halo color to white
+                map.setPaintProperty('point-labels-names', 'text-halo-color', mapTextOutline);  // Setting the halo color to white
                 map.setPaintProperty('point-labels-names', 'text-halo-width', 1);  
                 map.setPaintProperty('point-labels-names', 'text-color', matchExpression);
               }

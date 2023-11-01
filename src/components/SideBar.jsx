@@ -1,11 +1,9 @@
 
 import React from 'react';
 import { 
-  Accordion, AccordionSummary, AccordionDetails, 
-  Typography, ThemeProvider, createTheme 
+  Accordion, AccordionSummary, AccordionDetails, Typography, Paper
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { styled } from '@mui/system';
 import { useContext } from 'react';
 import { ThemeContext } from '../ThemeContext';
 
@@ -32,33 +30,39 @@ const faqs = [
 
 
 function SideBar() {
-
     const { currentThemeStyles } = useContext(ThemeContext);
     const backgroundColor = currentThemeStyles.backgroundColor;
-    const textOutlineColor = currentThemeStyles.mapTextOutline;
     const textColor = currentThemeStyles.textColor;
 
     return (
-                <div>
-                    <Typography variant="h6" style={{ marginBottom: '1em', color: textColor }}>FAQs</Typography>
-                    {faqs.map((faq, index) => (
-                        <Accordion key={index} style={{ backgroundColor: backgroundColor, color: textColor, marginTop: '1em' }}>
-                            <AccordionSummary
-                                expandIcon={<ExpandMoreIcon />}
-                                aria-controls={`faq-panel-content-${index}`}
-                                id={`faq-panel-header-${index}`}
-                            >
-                                <Typography variant="subtitle1">{faq.question}</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Typography variant="body2">
-                                    {faq.answer}
-                                </Typography>
-                            </AccordionDetails>
-                        </Accordion>
-                    ))}
-                </div>
-        );
+        <Paper style={{
+            backgroundColor: backgroundColor,
+            color: textColor,
+            padding: '1em',
+            margin: '1em 0',
+            elevation: 2, // Set your desired elevation here
+            boxShadow: '5px 2px 4px 4px rgba(0,0,0,0.1)' 
+        }}>
+            <Typography variant="h6" style={{ marginBottom: '1em' }}>FAQs</Typography>
+            {faqs.map((faq, index) => (
+                <Accordion key={index} style={{ backgroundColor: 'inherit', color: 'inherit', marginTop: '1em' }}>
+                    <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls={`faq-panel-content-${index}`}
+                        id={`faq-panel-header-${index}`}
+                    >
+                        <Typography variant="subtitle1">{faq.question}</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <Typography variant="body2">
+                            {faq.answer}
+                        </Typography>
+                    </AccordionDetails>
+                </Accordion>
+            ))}
+        </Paper>
+    );
 }
 
 export default SideBar;
+

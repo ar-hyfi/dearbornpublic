@@ -41,7 +41,7 @@ function Legend() {
         borderRadius: '50%',
         backgroundColor: color,
         marginRight: '5px',
-        border: `1px solid ${textOutlineColor}`
+        border: `1px solid ${textColor}`
     });
     
 

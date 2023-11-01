@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { ThemeContext } from '../ThemeContext'; // Adjust the import path as needed
-
-
 import mapboxgl from 'mapbox-gl';
 import './Map.css'
 import { fetchDataFromInfluxDB } from '../services/influxDB';
@@ -66,11 +64,9 @@ const road_sensors = {
 function Map() {
 
   const [map, setMap] = useState(null);
-  const [darkMode, setDarkMode] = useState(true); // in case we want to be able to switch between dark and light mode later
   const [geojsonData, setGeojsonData] = useState([]);
   const [loading, setLoading] = useState(false); //  for getting data from influx
   const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const [floodingDetected, setFloodingDetected] = useState(null); // null, 'detected', 'none'
   const updateInterval = useRef(null)
   const { currentThemeStyles } = useContext(ThemeContext);
   console.log('currentThemeStyles', currentThemeStyles)
@@ -205,11 +201,6 @@ function Map() {
           'fill-extrusion-opacity': 0.6,
         },
       });
-
-    // const bounds = getBounds(geojsonData.features);
-    // if (mapInstance) {
-    //   mapInstance.fitBounds(bounds, { padding: 30 });
-    //}
     }
 
 
@@ -257,11 +248,6 @@ function Map() {
               timestampExpression.push(site_code, latestTimestamp);
 
           });
-          if (isAnyFloodingDetected) {
-            setFloodingDetected('detected');
-          } else {
-                setFloodingDetected('none');
-            }
 
           // Add the default color at the end of the expression
           matchExpression.push('white');
@@ -324,11 +310,6 @@ function Map() {
                 timestampExpression.push(site_code, latestTimestamp);
   
             });
-            if (isAnyFloodingDetected) {
-              setFloodingDetected('detected');
-            } else {
-                  setFloodingDetected('none');
-              }
   
             // Add the default color at the end of the expression
             matchExpression.push('white');

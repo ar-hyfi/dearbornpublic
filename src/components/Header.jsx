@@ -1,9 +1,10 @@
 import React, { useContext } from 'react';
-import { Typography, AppBar, Toolbar, Box, Link, Hidden, useTheme, useMediaQuery } from '@mui/material';
-// import hyfiLogo from '/Users/arielroy/dearbornpublic/src/components/Dearborn_Logo.png';
-// import dearbornLogo from './dearborn_logo.png';
-// import miNextCitiesLogo from './mi_next_cities_logo.png';
+import { Typography, AppBar, Toolbar, Box, Hidden, useTheme, useMediaQuery } from '@mui/material';
+import hyfiLogo from './hyfi_logo.png';
+import dearbornLogo from './Dearborn_Logo.png';
+import miNextCitiesLogo from './MiNextCities_Logo.png';
 import { ThemeContext } from '../ThemeContext';
+import Link from '@mui/material/Link';
 
 function Header() {
   const theme = useTheme();
@@ -47,7 +48,7 @@ function Header() {
         </Box>
         <Hidden smDown>
           <Box display="flex" justifyContent="flex-end" alignItems="center" gap={2}>
-            {/* <Link href="https://hyfi.io" target="_blank" rel="noopener noreferrer">
+            <Link href="https://hyfi.io" target="_blank" rel="noopener noreferrer">
               <img src={hyfiLogo} alt="HyFi Logo" style={{ width: '80px' }} />
             </Link>
             <Link href="https://cityofdearborn.org/government/departments/public-works" target="_blank" rel="noopener noreferrer">
@@ -55,7 +56,7 @@ function Header() {
             </Link>
             <Link href="https://minextcities.org/" target="_blank" rel="noopener noreferrer">
               <img src={miNextCitiesLogo} alt="MI Next Cities Logo" style={{ width: '80px' }} />
-            </Link> */}
+            </Link>
           </Box>
         </Hidden>
       </Toolbar>
